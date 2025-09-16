@@ -51,7 +51,7 @@ CPU 0 is taking the brunt of the impact, spending over 90 seconds processing int
 
 A similar test on a Scar 15 from 2022 shows the exact same culprit: high DPC latency originating from `ACPI.sys`.
 
-<img width="974" height="511" alt="LatencyMon results on a Scar 15 showing high DPC latency from ACPI.sys" src="https://github.com/user-attachments/assets/fdc0d7c4-f3ac-4866-b092-edea648c2c9c" />
+<img width="974" height="511" alt="latencymon" src="https://github.com/user-attachments/assets/fdf6f26a-dda8-4561-82c7-349fc8c298ab" />
 
 It's easy to blame a Windows driver, but `ACPI.sys` is not a typical driver. It primarily functions as an interpreter for ACPI Machine Language (AML), the code provided by the laptop's firmware (BIOS). If `ACPI.sys` is slow, it's because the firmware is feeding it inefficient or flawed AML code to execute. These slowdowns are often triggered by General Purpose Events (GPEs) and traffic from the Embedded Controller (EC). To find the true source, we must dig deeper.
 
@@ -81,7 +81,7 @@ tracerpt C:\Temp\acpi_providers.etl -o C:\Temp\acpi_events.csv -of CSV
 
 Analyzing the resulting trace file in the Windows Performance Analyzer reveals a crucial insight. The spikes aren't random; they are periodic, occurring like clockwork every 30 to 60 seconds.
 
-<img width="837" height="258" alt="Windows Performance Analyzer showing periodic spikes in ACPI events." src="https://github.com/user-attachments/assets/bae42492-69d4-4c11-99bf-8a563831bfbc" />
+<img width="837" height="258" <img width="1673" height="516" alt="61c7abb1-d7aa-4b69-9a88-22cca7352f00" src="https://github.com/user-attachments/assets/2aac7320-3e06-4025-841c-86129f9d5b62" />
 
 Random interruptions often suggest hardware faults or thermal throttling. A perfectly repeating pattern points to a systemic issue, a timer or a scheduled event baked into the system's logic.
 
@@ -205,7 +205,7 @@ Consistency: The duration is remarkably stable and the interval is periodic.
 
 Every single time the lengthy `_GPE._L02` event fires, it triggers the exact same sequence of ACPI method calls.
 
-<img width="295" height="295" alt="Diagram showing GPE L02 triggers battery status methods which then trigger GPU power state transitions." src="https://github.com/user-attachments/assets/355aa71e-78f7-4b5d-8ca1-f71b6160ccc3" />
+<img width="589" height="589" alt="64921999-7614-4706-a5ac-54c39c38fd0b" src="https://github.com/user-attachments/assets/01326c61-b7a2-4c12-a907-8433f43a6a72" />
 
 The pattern is undeniable:
 1.  A hardware interrupt fires `_GPE._L02`.
@@ -403,7 +403,7 @@ Method (PWCG, 0, NotSerialized)
 ```
 Which we can see here:
 
-<img width="522" height="158" alt="{D31DB0BD-ED55-4E38-A12D-BFE4975A6A07}" src="https://github.com/user-attachments/assets/04a013f5-e36d-4b84-ab86-834099ebbef5" />
+<img width="1043" height="315" alt="image" src="https://github.com/user-attachments/assets/f6c62050-b470-49bd-ad55-35def0fff893" />
 
 Each of these operations requires communication with the Embedded Controller, adding to the workload inside the already-stalled interrupt handler.
 
@@ -665,3 +665,4 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior.*
+
