@@ -81,7 +81,7 @@ tracerpt C:\Temp\acpi_providers.etl -o C:\Temp\acpi_events.csv -of CSV
 
 Analyzing the resulting trace file in the Windows Performance Analyzer reveals a crucial insight. The spikes aren't random; they are periodic, occurring like clockwork every 30 to 60 seconds.
 
-<img width="837" height="258" <img width="1673" height="516" alt="61c7abb1-d7aa-4b69-9a88-22cca7352f00" src="https://github.com/user-attachments/assets/2aac7320-3e06-4025-841c-86129f9d5b62" />
+<img width="1673" height="516" alt="61c7abb1-d7aa-4b69-9a88-22cca7352f00" src="https://github.com/user-attachments/assets/2aac7320-3e06-4025-841c-86129f9d5b62" />
 
 Random interruptions often suggest hardware faults or thermal throttling. A perfectly repeating pattern points to a systemic issue, a timer or a scheduled event baked into the system's logic.
 
@@ -665,4 +665,5 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior.*
+
 
