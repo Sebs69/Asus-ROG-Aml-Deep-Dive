@@ -572,7 +572,7 @@ Traces from multiple ASUS gaming laptop models confirm this is not an isolated i
 
 ### What Actually Breaks
 
-The firmware acts as the hardware abstraction layer between Windows and the physical hardware. When ACPI control methods execute, they run under the Windows ACPI driver with specific timing constraints - GPE handlers should complete in microseconds (this is what Windows expects), not milliseconds.
+The firmware acts as the hardware abstraction layer between Windows and the physical hardware. When ACPI control methods execute, they run under the Windows ACPI driver with specific timing constraints and because of these timing constraints GPE control methods need to finish quickly because the firing GPE stays masked until the method returns so sleeping or polling inside a path like that can trigger real time-glitches and produce very high latency numbers, as our tests indicate.
 
 Microsoft's [Hardware Lab Kit GlitchFree test](https://learn.microsoft.com/windows-hardware/test/hlk/testref/f0ed5aa8-ef49-4fc9-99b6-753c857e4e2d) validates this hardware-software contract by measuring audio/video glitches during HD playback. It fails systems with driver stalls exceeding a few milliseconds because such delays break real-time guarantees needed for smooth media playback.
 
@@ -641,6 +641,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
