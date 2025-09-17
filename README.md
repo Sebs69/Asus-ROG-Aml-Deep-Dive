@@ -331,20 +331,20 @@ This logic ensures that even if the Embedded Controller's event queue is empty, 
 The LEVN() method takes an event and routes it:
 
 ```asl
-Method (NOD2, 1, Serialized)
-{
-    If ((Arg0 != DNOT))
-    {
-        DNOT = Arg0
-        Notify (^^PEG1.PEGP, Arg0)
-    }
+Method (LEVN, 1, NotSerialized)
+  {
+      If ((Arg0 != Zero))
+      {
+          MBF0 = Arg0
+          P80B = Arg0
+          Local6 = Match (LEGA, MEQ, Arg0, MTR, Zero, Zero)
+          If ((Local6 != Ones))
+          {
+              LGPA (Local6)
+          }
+      }
+  }
 
-    If ((ROCT == 0x55))
-    {
-        ROCT = Zero
-        Notify (^^PEG1.PEGP, 0xD1) // Hardware-Specific
-    }
-}
 ```
 
 ### The `LGPA` Dispatch Table
@@ -665,5 +665,6 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior.*
+
 
 
