@@ -74,7 +74,7 @@ logman update ACPITrace -p {C514638F-7723-485B-BCFC-96565D735D4A} 0xFFFFFFFF 5 -
 
 # Then once we're done we can stop the trace and check the etl file and save the data in csv format aswell.
 logman stop ACPITrace -ets
-tracerpt C:\Temp\acpi_providers.etl -o C:\Temp\acpi_events.csv -of CSV
+tracerpt C:\Temp\acpi.etl -o C:\Temp\acpi_events.csv -of CSV
 ```
 
 ### An Unexpected Discovery
@@ -641,6 +641,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
