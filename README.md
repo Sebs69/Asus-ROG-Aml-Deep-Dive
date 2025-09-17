@@ -558,25 +558,25 @@ Once again, the firmware prepares to cut power to the discrete GPU without first
 Traces from multiple ASUS gaming laptop models confirm this is not an isolated issue.
 
 #### Scar 15 Analysis
-*   **Trace Duration:** 4.1 minutes
-*   **`_GPE._L02` Events:** 7
-*   **Avg. GPE Duration:** 1.56ms (lower, but still unacceptably high)
-*   **Avg. Interval:** 39.4 seconds (nearly identical periodic nature)
-*   **GPU Power Cycles:** 8
+- **Trace Duration:** 4.1 minutes
+- **`_GPE._L02` Events:** 7 (every ~39 seconds)
+- **Avg. GPE Duration:** 1.56ms 
+- **GPU Power Cycles:** 8
 
 #### Zephyrus M16 Analysis
-*   **Trace Duration:** 19.9 minutes
-*   **`_GPE._L02` Events:** 3
-*   **Avg. GPE Duration:** 2.94ms
-*   **GPU Power Cycles:** 197 (far more frequent)
-*   **ASUS WMI Calls:** 2,370 (a massive number, indicating software amplification)
+- **Trace Duration:** 19.9 minutes
+- **`_GPE._L02` Events:** 3 (same periodic pattern)
+- **Avg. GPE Duration:** 2.94ms
+- **GPU Power Cycles:** 197 (far more frequent)
+- **ASUS WMI Calls:** 2,370 (Armoury Crate amplifying the problem)
 
-Microsoft has a built-in "smooth video" check. It plays HD video in full screen and watches for hiccups. If the PC drops frames, crackles, or any driver pauses for more than a few milliseconds, it fails. That’s Microsoft’s baseline for what "smooth" should look like.
+### What Actually Breaks
 
-Why it matters here:
+The firmware acts as the hardware abstraction layer between Windows and the physical hardware. When ACPI control methods execute, they run under the Windows ACPI driver with specific timing constraints - GPE handlers should complete in microseconds (this is what Windows expects), not milliseconds.
 
-ASUS firmware is causing millisecond-long pauses. Those pauses are exactly the kind that make this test fail i.e., the same stutters and audio pops regular users notice on YouTube/Netflix and games; this firmware violates fundemental standards.
+Microsoft's [Hardware Lab Kit GlitchFree test](https://learn.microsoft.com/windows-hardware/test/hlk/testref/f0ed5aa8-ef49-4fc9-99b6-753c857e4e2d) validates this hardware-software contract by measuring audio/video glitches during HD playback. It fails systems with driver stalls exceeding a few milliseconds because such delays break real-time guarantees needed for smooth media playback.
 
+These ASUS systems violate those constraints. The firmware holds GPE._L02 masked for 13ms while sleeping in ECLV, serializing all ACPI/EC operations behind that delay. It polls battery state when it should use event-driven notifications. It attempts GPU power transitions without checking platform configuration (HGMD). All these problems result in powerful hardware crippled by firmware that doesn't understand its own execution context.
 
 ### The Universal Pattern
 
@@ -592,7 +592,7 @@ This bug is a cascade of firmware design failures.
 
 ### Root Cause 1: The Misunderstanding of Interrupt Context
 
-On windows, the LXX / EXX run at PASSIVE_LEVEL via ACPI.sys but while a GPE control method runs **the firing GPE stays masked** and ACPI/EC work is **serialized**. ASUS's dispatch from GPE._L02 to ECLV loops, calls Sleep(25/100ms) and re-arms the EC stretching that masked window into tens of milliseconds (which would explain the 13ms CPU time in ETW (Kernel ms) delay for GPE Events) and producing a periodic ACPI.sys burst that causes the latency problems on the system.The correct behavior is to latch or clear the event, exit the method, and signal a driver with Notify for any heavy work; do not self-rearm or sleep in this path at all.
+On windows, the LXX / EXX run at PASSIVE_LEVEL via ACPI.sys but while a GPE control method runs **the firing GPE stays masked** and ACPI/EC work is **serialized**. ASUS's dispatch from GPE._L02 to ECLV loops, calls Sleep(25/100ms) and re-arms the EC stretching that masked window into tens of milliseconds (which would explain the 13ms CPU time in ETW (Kernel ms) delay for GPE Events) and producing a periodic ACPI.sys burst that causes the latency problems on the system. The correct behavior is to latch or clear the event, exit the method, and signal a driver with Notify for any heavy work; do not self-rearm or sleep in this path at all.
 
 ### Root Cause 2: Flawed Interrupt Handling
 The firmware artificially re-arms the interrupt, creating an endless loop of GPEs instead of clearing the source and waiting for the next legitimate hardware event. This transforms a hardware notification system into a disruptive, periodic timer.
@@ -641,6 +641,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
