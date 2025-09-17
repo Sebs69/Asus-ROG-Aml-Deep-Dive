@@ -117,7 +117,7 @@ In this mode:
 - The dGPU is wired directly to the internal and external displays.
 - There is no mechanism for switching between GPUs.
 
-Yet, the firmware is relentlessly trying to power cycle the dGPU every 15-30 seconds. The dGPU in mux mode isn't just "preferred" - it's the ONLY path to the display. There's no fallback, and no alternative. When the firmware sends `_PS3` (power off), it's attempting something architecturally impossible.
+Yet, the firmware ignores MUX state nudging the iGPU path (GFX0) and, worse, engaging dGPU cut/notify logic (PEGP/PEPD) every 15–30 seconds. The dGPU in mux mode isn't just "preferred" - it's the ONLY path to the display. There's no fallback, and no alternative. When the firmware sends `_PS3` (power off), it's attempting something architecturally impossible.
 
 Most of the time, hardware sanity checks refuse these nonsensical commands, but even failed attempts introduce latency spikes causing audio dropouts, input lag, and accumulating performance degradation. Games freeze mid-session, videos buffer indefinitely, system responsiveness deteriorates until restart.
 
@@ -125,7 +125,7 @@ Most of the time, hardware sanity checks refuse these nonsensical commands, but 
 
 Sometimes, under specific thermal conditions or race conditions, the power-down actually succeeds. When the firmware manages to power down the GPU that's driving the display, the sequence is predictable and catastrophic:
 
-1. **Firmware executes `_PS3`** - GPU power off command
+1. **Firmware OFF attempt** - cuts the dgpu path via PEG1.DGCE
 2. **Hardware complies** - safety checks fail or timing aligns
 3. **Display signal cuts** - monitors go black
 4. **User input triggers wake** - mouse/keyboard activity  
@@ -429,7 +429,7 @@ Method (NOD2, 1, Serialized)
     }
 }
 ```
-These notifications (`0xD1`, `0xD2`, etc.) are hardware-specific signals that tell the NVIDIA driver to re-evaluate its power state, which is what triggers the futile `_PS0/_DOS/_PS3` power-cycling sequence seen in the traces.
+These notifications (`0xD1`, `0xD2`, etc.) are hardware-specific signals that tell the NVIDIA driver to re-evaluate its power state, which prompts driver power-state re-evaluation; in traces this surfaces as iGPU GFX0._PSx/_DOS toggles plus dGPU state changes via PEPD._DSM/DGCE.
 
 
 ## The Mux Mode Confusion: A Firmware with a Split Personality
@@ -641,6 +641,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
