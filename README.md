@@ -117,7 +117,7 @@ In this mode:
 - The dGPU is wired directly to the internal and external displays.
 - There is no mechanism for switching between GPUs.
 
-Yet, the firmware ignores MUX state nudging the iGPU path (GFX0) and, worse, engaging dGPU cut/notify logic (PEGP/PEPD) every 15–30 seconds. The dGPU in mux mode isn't just "preferred" - it's the ONLY path to the display. There's no fallback, and no alternative. When the firmware sends `_PS3` (power off), it's attempting something architecturally impossible.
+Yet, the firmware ignores MUX state nudging the iGPU path (GFX0) and, worse, engaging dGPU cut/notify logic (PEGP/PEPD) every 30-60 seconds. The dGPU in mux mode isn't just "preferred" - it's the ONLY path to the display. There's no fallback, and no alternative. When the firmware arms DGCE (power off), it's attempting something architecturally impossible.
 
 Most of the time, hardware sanity checks refuse these nonsensical commands, but even failed attempts introduce latency spikes causing audio dropouts, input lag, and accumulating performance degradation. Games freeze mid-session, videos buffer indefinitely, system responsiveness deteriorates until restart.
 
@@ -641,6 +641,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
