@@ -591,31 +591,8 @@ Despite being different models, all affected systems exhibit the same core flaws
 This bug is a cascade of firmware design failures.
 
 ### Root Cause 1: The Misunderstanding of Interrupt Context
-The firmware's `ECLV()` method treats a high-priority interrupt handler like a standard application thread, which is fundamentally incorrect.
 
-**What ASUS Wrote:**
-```asl
-Method (ECLV, 0, NotSerialized)
-{
-    While (events_exist)
-    {
-        process_event();
-        Sleep(100);         // FATAL FLAW: This blocks the entire CPU core.
-        check_timers();
-    }
-}
-```
-**What It Should Be:**
-```asl
-Method (ECLV, 0, NotSerialized)
-{
-    // Acknowledge interrupt, queue work, and exit immediately.
-    Local0 = EC0.EEV0;      // Read event source
-    EC0.EEV0 = 0;           // Clear the event source
-    QueueWorkForLater(Local0); // Queue a low-priority task
-    Return;                 // Exit the handler in microseconds.
-}
-```
+On windows, the LXX / EXX run at PASSIVE_LEVEL via ACPI.sys but while a GPE control method runs **originating GPE stays masked** and ACPI/EC work is **serialized**. ASUS's dispatch from GPE._L02 to ECLV loops, calls Sleep(25/100ms) and re-arms the EC stretching that masked window into tens of milliseconds (which would explain the 13ms delay for GPE Events) and producing a periodic ACPI.sys burst that causes the latency problems on the system. What it should have done instead of latch/clear the event then exit the method then defer heavy policy to a driver via Notify and avoid any kind of self re-arming or sleeps in this path.
 
 ### Root Cause 2: Flawed Interrupt Handling
 The firmware artificially re-arms the interrupt, creating an endless loop of GPEs instead of clearing the source and waiting for the next legitimate hardware event. This transforms a hardware notification system into a disruptive, periodic timer.
@@ -664,6 +641,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
