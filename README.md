@@ -312,7 +312,7 @@ An interrupt handler runs at a very high priority to service hardware requests q
 - Allow the kernel to schedule other threads.
 - Update system timers.
 
-> Clarification: These Sleep() calls live in the ACPI GPE handling path for the GPE L02, these calls get executed at PASSIVE_LEVEL after the SCI/GPE is aacknowledged so it's not a raw ISR (because i don't think windows will even allow that) but analyzing this further while the control method runs the GPE stays masked  and the ACPI/EC work is serialized. With the Sleep() calls inside that path and the self rearm it seems to have the effect of making ACPI.sys get tied up in long periodic bursts (often on CPU 0) which still have the same effect on the system.
+> Clarification: These Sleep() calls live in the ACPI GPE handling path for the GPE L02, these calls get executed at PASSIVE_LEVEL after the SCI/GPE is acknowledged so it's not a raw ISR (because i don't think windows will even allow that) but analyzing this further while the control method runs the GPE stays masked  and the ACPI/EC work is serialized. With the Sleep() calls inside that path and the self rearm it seems to have the effect of making ACPI.sys get tied up in long periodic bursts (often on CPU 0) which still have the same effect on the system.
 
 **Wtf 2: Time-Sliced Interrupt Processing**
 The entire loop is designed to run for an extended period, processing events in batches. It's effectively a poorly designed task scheduler running inside an interrupt handler, capable of holding a CPU core hostage for potentially seconds at a time.
@@ -664,6 +664,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
