@@ -412,21 +412,20 @@ Each of these operations requires communication with the Embedded Controller, ad
 The `NOD2()` method sends notifications to the GPU driver.
 
 ```asl
-  Method (NOD2, 1, Serialized)
-        {
-            If ((Arg0 != DNOT))
-            {
-                DNOT = Arg0
-                Notify (^^PEG1.PEGP, Arg0)
-            }
+Method (NOD2, 1, Serialized)
+{
+    If ((Arg0 != DNOT))
+    {
+        DNOT = Arg0
+        Notify (^^PEG1.PEGP, Arg0)
+    }
 
-            If ((ROCT == 0x55))
-            {
-                ROCT = Zero
-                Notify (^^PEG1.PEGP, 0xD1) // Hardware-Specific
-            }
-        }
-
+    If ((ROCT == 0x55))
+    {
+        ROCT = Zero
+        Notify (^^PEG1.PEGP, 0xD1) // Hardware-Specific
+    }
+}
 ```
 These notifications (`0xD1`, `0xD2`, etc.) are hardware-specific signals that tell the NVIDIA driver to re-evaluate its power state, which is what triggers the futile `_PS0/_DOS/_PS3` power-cycling sequence seen in the traces.
 
@@ -665,6 +664,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior.*
+
 
 
 
