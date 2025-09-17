@@ -487,9 +487,6 @@ Case (0x18)
 }
 ```
 
-This is the bug. The firmware, despite proving it knows how to check the MUX state, forgets to do so here. It blindly sends a power-management notification to the NVIDIA driver, instructing it to change power states. In MUX mode, this command is nonsensical it's asking the driver to power down the only GPU that is keeping the screen on. This triggers the futile power-cycling, the massive latency spikes, and the system instability. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible—ETW/ETL logs and commands are in the repo. If you think something’s wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.
-
-
 ### Another Path to the Same Problem: The Platform Power Management DSM
 
 This is not a single typo. A second, parallel power management system in the firmware exhibits the exact same flaw. The Platform Extension Plug-in Device (`PEPD`) is used by Windows to manage system-wide power states, such as turning off displays during modern standby.
@@ -664,9 +661,4 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 
 ---
 
-*Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior.*
-
-
-
-
-
+*Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible—the ETW/ETL logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
