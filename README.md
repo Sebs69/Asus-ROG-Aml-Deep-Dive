@@ -606,10 +606,11 @@ The code that sends GPU power notifications does not check if the system is in M
 
 This issue is not new or isolated. User reports documenting identical symptoms with high ACPI.sys DPC latency, periodic stuttering, and audio crackling have been accumulating since at least 2021 across ASUS's entire gaming laptop lineup.
 
-**August 2021: The First Major Reports**  
-The earliest documented cases appear on the official ASUS ROG forums. A G15 Advantage Edition (G513QY) owner reports ["severe DPC latency from ACPI.sys"](https://rog-forum.asus.com/t5/rog-strix-series/g15-advantage-edition-g513qy-severe-dpc-latency-audio-dropouts/m-p/809512) with audio dropouts occurring under any load condition. The thread, last edited in March 2024, shows the issue remains unresolved after nearly three years.
+**August 2021: First major reports (AMD Advantage Edition)**
+The earliest documented case on the official ASUS ROG forums is a **G15 Advantage Edition (G513QY, all-AMD)** owner reporting ["severe DPC latency from ACPI.sys"](https://rog-forum.asus.com/t5/rog-strix-series/g15-advantage-edition-g513qy-severe-dpc-latency-audio-dropouts/m-p/809512) with audio dropouts under any load. The thread, last edited in March 2024, shows the issue remained unresolved for years.
 
-Reddit users simultaneously report [identical ACPI.sys latency problems](https://www.reddit.com/r/ASUS/comments/odprtv/high_dpc_latency_from_acpisys_can_be_caused_by/) alongside NVIDIA driver issues; the exact symptoms described in this investigation.
+**August 2021: Parallel reports (NVIDIA-based models)**
+Around the same time, **separate Reddit threads on NVIDIA-based ROG models** describe [identical ACPI.sys latency problems](https://www.reddit.com/r/ASUS/comments/odprtv/high_dpc_latency_from_acpisys_can_be_caused_by/). Different GPU vendors, same firmware/ACPI failure pattern.
 
 **2021-2023: Spreading Across Models**  
 Throughout this period, the issue proliferates across ASUS's gaming lineup:
@@ -641,6 +642,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 ---
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
