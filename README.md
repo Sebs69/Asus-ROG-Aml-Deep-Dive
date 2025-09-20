@@ -632,18 +632,17 @@ The evidence is undeniable:
 -   **Logical Proof:** The code lacks critical checks for the laptop's hardware state (MUX mode).
 -   **Systemic Proof:** The issue is reproducible across different models and BIOS versions.
 
-> Matthew Garrett had commented on this analysis, suggesting the system-wide freezes are likely caused by the firmware entering System Management Mode (SMM), highly recommend also checking this out for additional context and understanding: https://news.ycombinator.com/threads?id=mjg59
+> Matthew Garrett had commented on this analysis, suggesting the system-wide freezes are likely caused by the firmware entering System Management Mode (SMM), highly recommend also checking this out for additional context and understanding: https://news.ycombinator.com/item?id=45282069
 
 Until a fix is implemented, millions of buyers of Asus laptops from approx. 2021 to present day are facing stutters on the simplest of tasks, such as watching YouTube, for the simple mistake of using a sleep call inside of an inefficient interrupt handler and not checking the GPU environment properly.
 
 The code is there. The traces prove it. ASUS must fix its firmware.
 
-> ASUS has officially put out a statement: https://x.com/asus_rogna/status/1968404596658983013?s=46
-
-
----
+> Update 1: ASUS has officially put out a statement: https://x.com/asus_rogna/status/1968404596658983013?s=46
+> Update 2: Reply from ASUS RD received; repro info sent over
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
