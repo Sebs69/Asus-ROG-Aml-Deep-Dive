@@ -174,7 +174,6 @@ fffff685`3a767a20 00007ff8`ee71ca24     : 00000000`00000000 00000000`00000000 00
 
 ...
 ```
-
 The crash dump confirms the thread is stuck in `win32kbase!DrvSetWddmDeviceMonitorPowerState`, waiting for the NVIDIA driver to respond. It can't because it's caught between a confused power state, windows wanting to turn on the GPU while the firmware is arming the GPU cut off.
 
 ### Understanding General Purpose Events
@@ -643,6 +642,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 > Update 2: Reply from ASUS RD received; repro info sent over
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
