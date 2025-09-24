@@ -47,7 +47,7 @@ CPU 0 DPC highest execution time (μs):                5,998.834725
 CPU 0 DPC total execution time (s):                   90.558238
 ```
 
-CPU 0 is taking the brunt of the impact, spending over 90 seconds processing interrupts while other cores remain largely unaffected. This isn't a failure of load balancing; it's a process locked to a single core.
+[CPU 0](https://github.com/Zephkek/Asus-ROG-Aml-Deep-Dive/blob/main/Other/CORE0.md) is taking the brunt of the impact, spending over 90 seconds processing interrupts while other cores remain largely unaffected. This isn't a failure of load balancing; it's a process locked to a single core.
 
 A similar test on a Scar 15 from 2022 shows the exact same culprit: high DPC latency originating from `ACPI.sys`.
 
@@ -643,6 +643,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 > Update 2: Reply from ASUS RD received; repro info sent over
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
