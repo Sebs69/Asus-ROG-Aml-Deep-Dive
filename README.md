@@ -228,7 +228,7 @@ acpidump -b
 # SSDT1.dat ... SSDT17.dat - Secondary System Description Tables
 
 # Decompile the main table into human-readable ACPI Source Language (.dsl)
-iasl -d DSDT.dsl
+iasl -d dsdt.dat
 ```
 This decompiled ASL provides a direct view into the firmware's executable logic. It is a precise representation of the exact instructions that the ACPI.sys driver is fed by the firmware and executes at the highest privilege level within the Windows kernel. Any logical flaws found in this code are the direct cause of the system's behavior.
 
@@ -642,6 +642,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 > Update 2: Reply from ASUS RD received; repro info sent over
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
