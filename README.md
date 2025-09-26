@@ -48,6 +48,7 @@ CPU 0 DPC total execution time (s):                   90.558238
 ```
 
 CPU 0 is taking the brunt of the impact, spending over 90 seconds processing interrupts while other cores remain largely unaffected. This isn't a failure of load balancing; it is a predictable (though not required) outcome of how the Windows kernel manages system interrupts, which [effectively confines the ACPI workload to a single core](Other/CPU0.md).
+
 A similar test on a Scar 15 from 2022 shows the exact same culprit: high DPC latency originating from `ACPI.sys`.
 
 <img width="974" height="511" alt="latencymon" src="https://github.com/user-attachments/assets/fdf6f26a-dda8-4561-82c7-349fc8c298ab" />
@@ -641,6 +642,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 > Update 2: Reply from ASUS RD received; repro info sent over
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
