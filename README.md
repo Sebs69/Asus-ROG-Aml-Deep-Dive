@@ -12,7 +12,7 @@ You've likely tried all the conventional fixes:
 - Following convoluted multi-step guides from Reddit threads.
 - Even installing Linux, only to find the problem persists.
 
-If none of that worked, it's because the issue isn't with the operating system or a driver. The problem is far deeper, embedded in the machine's firmware, the BIOS.
+If none of that worked, it's because the issue isn't with the operating system or a driver. The problem is far deeper, embedded in the machine's firmware, the UEFI.
 
 ## Initial Symptoms and Measurement
 
@@ -47,13 +47,12 @@ CPU 0 DPC highest execution time (μs):                5,998.834725
 CPU 0 DPC total execution time (s):                   90.558238
 ```
 
-CPU 0 is taking the brunt of the impact, spending over 90 seconds processing interrupts while other cores remain largely unaffected. This isn't a failure of load balancing; it's a process locked to a single core.
-
+CPU 0 is taking the brunt of the impact, spending over 90 seconds processing interrupts while other cores remain largely unaffected. This isn't a failure of load balancing; it is a predictable (though not required) outcome of how the Windows kernel manages system interrupts, which [effectively confines the ACPI workload to a single core](Other/CPU0.md).
 A similar test on a Scar 15 from 2022 shows the exact same culprit: high DPC latency originating from `ACPI.sys`.
 
 <img width="974" height="511" alt="latencymon" src="https://github.com/user-attachments/assets/fdf6f26a-dda8-4561-82c7-349fc8c298ab" />
 
-It's easy to blame a Windows driver, but `ACPI.sys` is not a typical driver. It primarily functions as an interpreter for ACPI Machine Language (AML), the code provided by the laptop's firmware (BIOS). If `ACPI.sys` is slow, it's because the firmware is feeding it inefficient or flawed AML code to execute. These slowdowns are often triggered by General Purpose Events (GPEs) and traffic from the Embedded Controller (EC). To find the true source, we must dig deeper.
+It's easy to blame a Windows driver, but `ACPI.sys` is not a typical driver. It primarily functions as an interpreter for ACPI Machine Language (AML), the code provided by the laptop's firmware (UEFI). If `ACPI.sys` is slow, it's because the firmware is feeding it inefficient or flawed AML code to execute. These slowdowns are often triggered by General Purpose Events (GPEs) and traffic from the Embedded Controller (EC). To find the true source, we must dig deeper.
 
 ## Capturing the Problem in More Detail: ETW Tracing
 
@@ -217,7 +216,7 @@ The pattern is undeniable:
 
 ### Getting to the Source
 
-To analyze the code responsible for this behavior, we must extract and decompile the ACPI tables provided by the BIOS to the operating system.
+To analyze the code responsible for this behavior, we must extract and decompile the ACPI tables provided by the UEFI to the operating system.
 
 ```bash
 # Extract all ACPI tables into binary .dat files
@@ -629,7 +628,7 @@ The evidence is undeniable:
 -   **Measured Proof:** GPE handlers are measured blocking a CPU core for over 13 milliseconds.
 -   **Code Proof:** The decompiled firmware explicitly contains `Sleep()` calls within an interrupt handler.
 -   **Logical Proof:** The code lacks critical checks for the laptop's hardware state (MUX mode).
--   **Systemic Proof:** The issue is reproducible across different models and BIOS versions.
+-   **Systemic Proof:** The issue is reproducible across different models and UEFI versions.
 
 > Matthew Garrett had commented on this analysis, suggesting the system-wide freezes are likely caused by the firmware entering System Management Mode (SMM), highly recommend also checking this out for additional context and understanding: https://news.ycombinator.com/item?id=45282069
 
@@ -642,6 +641,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 > Update 2: Reply from ASUS RD received; repro info sent over
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
