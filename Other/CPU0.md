@@ -5,7 +5,7 @@
 >
 > **Conclusion:** **Hypothesis is false.** `acpi.sys` connects the SCI using `IoConnectInterruptEx` with `CONNECT_LINE_BASED (Version = 2)` and does **not** pass a CPU affinity. The HAL resolves a **software** affinity (on my VM it ends up as `0x3`, so CPU0+CPU1). For **hardware**, the HAL programs the IOAPIC entry for the SCI (GSI/IRQ 9) to **Lowest-priority delivery** with a **Logical** destination mask that matches that set.
 >
-> It is **not** physically pinned to CPU 0, but it persistently lands there as a result of the Windows kernel's scheduling and power management policies. The hardware is configured for "lowest priority" delivery, which includes a fair, rotating arbitration mechanism to handle ties. However, the Windows scheduler frequently parks other cores during idle periods, leaving CPU 0 as the only processor in a responsive state. This effectively eliminates any tie-breaking scenario and makes CPU 0 the de facto target for the interrupt.
+> It is **not** physically pinned to CPU 0, but it persistently lands there as a result of the Windows kernel's scheduling and power management policies. The hardware is configured for "lowest priority" delivery, which includes a fair, rotating arbitration mechanism to handle ties [2]. However, the Windows scheduler frequently parks other cores during idle periods, leaving CPU 0 as the only processor in a responsive state. This effectively eliminates any tie-breaking scenario and makes CPU 0 the de facto target for the interrupt.
 
 > This report documents the end-to-end methodology used to trace the behavior from software to hardware and to fulfill my curiosity about this.
 
@@ -15,7 +15,7 @@
 
 I have adopted a high level approach to this, moving from high-level code down to the physical hardware state. Each step builds upon the last to formulate a clear chain of understanding.
 
-1. **Static Analysis (Code Intent):** Reverse engineering `acpi.sys`, `ntoskrnl.exe` in IDA to understand the intended code path and how interrupt affinity *should* be handled.
+1. **Static Analysis (Code Intent):** Reverse engineering `acpi.sys`, `ntoskrnl.exe` in IDA/Ghidra to understand the intended code path and how interrupt affinity *should* be handled.
 2. **Live Kernel Debugging (Software Reality):** Intercepting key function calls in WinDbg to prove:
 
    * What parameters `acpi.sys` actually sends.
