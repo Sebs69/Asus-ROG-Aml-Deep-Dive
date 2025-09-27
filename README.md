@@ -640,8 +640,10 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 > Update 1: ASUS has officially put out a statement: https://x.com/asus_rogna/status/1968404596658983013?s=46
 
 > Update 2: Reply from ASUS RD received; repro info sent over
+> Update 3: Asus sent me beta BIOS, currently testing.
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
