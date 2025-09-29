@@ -619,7 +619,7 @@ Throughout this period, the issue proliferates across ASUS's gaming lineup:
 
 **2023-2024: The Problem Persists in New Models**  
 Even the latest generations aren't immune:
-- [2023 Zephyrus G16 owners report persistent audio issues](https://www.reddit.com/r/ZephyrusM16/comments/1j33ld6/this_machine_has_been_nothing_but_problems_no/)
+- [2023 Zephyrus M16 owners report persistent audio issues](https://www.reddit.com/r/ZephyrusM16/comments/1j33ld6/this_machine_has_been_nothing_but_problems_no/)
 - [2023 G16 models continue experiencing audio pops/crackles](https://www.reddit.com/r/ZephyrusG14/comments/1l4jb13/audio_popscrackles_on_zephyrus_g16_2023/)
 - [2024 Intel G16 models require workarounds for audio stuttering](https://www.reddit.com/r/ZephyrusG14/comments/1i2w9ah/resolving_audio_popsstuttering_on_2024_intel_g16/)
 
@@ -644,6 +644,7 @@ The code is there. The traces prove it. ASUS must fix its firmware.
 > Update 3: Asus sent me beta BIOS, currently testing. (https://x.com/ASUS_ROGNA/status/1971662996339646645/photo/1)
 
 *Investigation conducted using the Windows Performance Toolkit, ACPI table extraction tools, and Intel ACPI Component Architecture utilities. All code excerpts are from official ASUS firmware. Traces were captured on multiple affected systems, all showing consistent behavior. I used an LLM for wording. The research, traces, and AML decomp are mine. Every claim is verified and reproducible if you follow the steps in the article; logs and commands are in the repo. If you think something's wrong, cite the exact timestamp/method/line. "AI wrote it" is not an argument.*
+
 
 
 
